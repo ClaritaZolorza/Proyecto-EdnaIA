@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdnaIA | Registro</title>
+    
+    <link rel="shortcut icon" href="./img/Logo2.png" type="image/x-icon">
+    <link rel="stylesheet" href="./css/styleInicioSesion.css">
+</head>
+<body>
+    
+    <div class="container">
+        <div class="container-form">
+            <form class="sign-in">
+                <h2>Iniciar Sesión</h2>
+                <div class="social-networks">
+                    <ion-icon name="logo-google"></ion-icon>
+                </div>
+                <span>Use su correo y contraseña</span>
+                <div class="container-input">
+                    <ion-icon name="mail-outline"></ion-icon>
+                    <input type="text" id="emailInput" placeholder="Email">
+                </div>
+                <div class="container-input">
+                    <ion-icon name="lock-closed-outline"></ion-icon>
+                    <input type="password" placeholder="password">
+                </div>
+                <a href="#">¿Olvidaste tu contraseña?</a>
+                <button class="button">INICIAR SESIÓN</button>
+            </form>
+        </div>
+        <div class="container-form">
+            <form class="sign-up">
+                <h2>Registrarse</h2>
+                <div class="social-networks">
+                    <ion-icon name="logo-google"></ion-icon>
+                </div>
+                <span>Use su correo electrónico para registrarse</span>
+                <div class="container-input">
+                    <ion-icon name="person-outline"></ion-icon>
+                    <input type="text" placeholder="Nombre">
+                </div>
+                <div class="container-input">
+                    <ion-icon name="mail-outline"></ion-icon>
+                    <input type="text" placeholder="Email">
+                </div>
+                <div class="container-input">
+                    <ion-icon name="lock-closed-outline"></ion-icon>
+                    <input type="password" placeholder="password">
+                </div>
+                <button class="button">REGISTRARSE</button>
+            </form>
+        </div>
+
+        <div class="container-welcome">
+            <div class="welcome-sign-up welcome">
+                <h3>¡Bienvenido!</h3>
+                <p>Ingrese sus datos personales para usar todas las funciones del sitio</p>
+                <button class="button" id="btn-sign-up">Registrarse</button>
+            </div>
+            <div class="welcome-sign-in welcome">
+                <h3>¡Hola!</h3>
+                <p>Regístrese con sus datos personales para usar todas las funciones de nuestro sitio</p>
+                <button class="button" id="btn-sign-in">Iniciar Sesión</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- <button id="btn">Click</button> -->
+
+
+    <script src="./js/scriptInicioSesion.js"></script>
+    <script  type="module" src ="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script> 
+    <script  nomodule  src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const email = urlParams.get('email');
+          if (email) {
+            document.getElementById('emailInput').value = email; // Ajusta el selector según el id o clase del input
+          }
+        });
+      </script>
+
+</body>
+</html>

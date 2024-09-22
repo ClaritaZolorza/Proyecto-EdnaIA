@@ -1,29 +1,38 @@
 const chatInput = document.querySelector('#chat-input');
 const sendButton = document.querySelector('#send-btn');
+const newChatButton = document.querySelector('#new-chat-btn');
 const chatContainer = document.querySelector(".chat-container");
 const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
+const chatHistoryContainer = document.querySelector("#chat-history");
+const menuToggle = document.querySelector('.menu-toggle');  
+const sideNav = document.querySelector('.side-nav');        
 
 let userText = null;
 // Put your key this const API_KEY = "YOUR_KEY_HERE" | Pon tu clave esta const API_KEY = "YOUR_KEY_HERE"
-const API_KEY = key();
+//const API_KEY = key();
+
+const API_URL = "http://127.0.0.1:5000/chat"; // URL de servidor Flask
 const initialHeight = chatInput.scrollHeight;
 
 const loadDataFromLocalstorage = () => {
     const themeColor = localStorage.getItem("theme-color");
 
+    // Cambia el tema según lo guardado en el localStorage
     document.body.classList.toggle("light-mode", themeColor === "light_mode");
     themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
 
     const defaultText = `<div class="default-text">
                             <h1>EdnaIA</h1>
-                            <!--Start a conversation and explore the power of AI.<br> Your chat history will be display here.-->
                             <p>Inicie una conversación y explore el poder de la IA.<br> Su historial de chat se mostrará aquí.</p>
-                        </div>`
+                        </div>`;
 
+    // Cargar chats desde el localStorage o mostrar el texto por defecto si está vacío
     chatContainer.innerHTML = localStorage.getItem("all-chats") || defaultText;
+
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
 }
+
 
 loadDataFromLocalstorage();
 
@@ -36,49 +45,76 @@ const createElement = (html, className) => {
     return chatDiv; // Return the created chat div | Devuelve el div de chat creado
 }
 
+
+// Función para simular el efecto de escritura
+const typeText = (element, text) => {
+    let index = 0;
+    const interval = setInterval(() => {
+        if (index < text.length) {
+            element.append(text.charAt(index));
+            index++;
+            chatContainer.scrollTo(0, chatContainer.scrollHeight);
+        } else {
+            clearInterval(interval);
+            localStorage.setItem("all-chats", chatContainer.innerHTML);
+        }
+    }, 50); // Velocidad de escritura (50ms por carácter)
+};
+
+
+
+
 //Obtener respuesta de chat
 const getChatResponse = async (incomingChatDiv) => {
-    //const API_URL ="https://api.openai.com/v1/completions";
     const pElement = document.createElement("p");
 
-
-// Define the properties and data for the API request
-// Definir las propiedades y los datos para la solicitud de API
     const requestOptions = {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${API_KEY}`
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            model:"gpt-3.5-turbo-instruct",
-            prompt: userText,
-            max_tokens: 2048,
-            temperature: 0.2,
-            n: 1,
-            stop: null
+            message: userText
         })
-    }
+    };
 
-    // Send POST request to API, get response and set the response as  paragraph element text
-    // Envíe una solicitud POST a la API, obtenga una respuesta y establezca la respuesta como texto de elemento de párrafo
-    try {
-        const response = await (await fetch(API_URL, requestOptions)).json();
-        //console.log(response);
-        pElement.textContent = response.choices[0].text.trim();
-    } catch(error) {
-        //console.log(error); Oops! Something went wrong while retrieving the response. Please try again.
+    // try {
+    //     const response = await fetch(API_URL, requestOptions);
+    //     if (!response.ok) {
+    //         throw new Error('Network response was not ok');
+    //     }
+
+    //     const data = await response.json();
+    //     const responseText = data.response.trim();
+        
+    //     // Usa la función de escritura gradual
+       
+    //     typeText(pElement, responseText, () => {
+    //         localStorage.setItem("all-chats", chatContainer.innerHTML);
+    //     });
+        // Usa 'data.response' en lugar de 'responseText'
+        // typeText(pElement, data.response.trim(), () => {
+            // Código a ejecutar después de completar la escritura
+        //     localStorage.setItem("all-chats", chatContainer.innerHTML);
+
+        // });}
+        try {
+            const response = await fetch(API_URL, requestOptions);
+            if (!response.ok) throw new Error('Network response was not ok');
+            const data = await response.json();
+            typeText(pElement, data.response.trim());
+        } catch (error) {
         pElement.classList.add("error");
-        pElement.textContent = "¡Ups! Algo salió mal al recuperar la respuesta. Inténtalo de nuevo."
-    }
+        pElement.textContent = "¡Ups! Algo salió mal al recuperar la respuesta. Inténtalo de nuevo.";
+        console.error('Error:', error);
+        }
 
-    // Remove the typing animation, append the paragraph element and save the chats to local storage
-    // Elimine la animación de escritura, agregue el elemento de párrafo y guarde los chats en el almacenamiento local
     incomingChatDiv.querySelector(".typing-animation").remove();
     incomingChatDiv.querySelector(".chat-details").appendChild(pElement);
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
-    localStorage.setItem("all-chats,", chatContainer.innerHTML);
+    //localStorage.setItem("all-chats,", chatContainer.innerHTML);
 }
+
 
 const copyResponse = (copyBtn) => {
     // Copy the text content of the response to the clipboard
@@ -112,6 +148,71 @@ const showTypingAnimation = () => {
     getChatResponse(incomingChatDiv);
 }
 
+
+// Función para enviar un mensaje
+// const sendMessage = () => {
+//     const message = chatInput.value.trim();
+//     if (message !== "") {
+//         // Eliminar texto por defecto si hay mensajes
+//         const defaultTextElement = document.querySelector('.default-text');
+//         if (defaultTextElement) {
+//             defaultTextElement.remove();
+//         }
+
+//         // Agregar mensaje al chat
+//         const newMessage = document.createElement('div');
+//         newMessage.classList.add('chat', 'outgoing');
+//         newMessage.innerHTML = `<div class="chat-content">
+//                                     <div class="chat-details">
+//                                         <img src="./img/Logo2.png" alt="user-img">
+//                                         <p>${message}</p>
+//                                     </div>
+//                                 </div>`;
+//         chatContainer.appendChild(newMessage);
+//         chatInput.value = ""; // Limpiar input
+
+//         // Guardar el chat en localStorage
+//         saveChatsToLocalstorage();
+//         chatContainer.scrollTo(0, chatContainer.scrollHeight);
+
+//         // Simular respuesta de IA
+//         setTimeout(showTypingAnimation, 500);
+//     }
+// }
+
+
+// Función para cargar el historial de conversaciones desde localStorage
+const loadChatHistory = () => {
+    const chatHistory = JSON.parse(localStorage.getItem("chat-history")) || [];
+    chatHistoryContainer.innerHTML = "";
+
+    chatHistory.forEach((chat, index) => {
+        const chatItem = document.createElement("p");
+        chatItem.textContent = `Chat ${index + 1}`;
+        chatItem.addEventListener("click", () => loadChatFromHistory(index));
+        chatHistoryContainer.appendChild(chatItem);
+    });
+};
+
+const saveChatToHistory = (chatContent) => {
+    const chatHistory = JSON.parse(localStorage.getItem("chat-history")) || [];
+    chatHistory.push(chatContent);
+    localStorage.setItem("chat-history", JSON.stringify(chatHistory));
+    loadChatHistory();
+};
+
+// Función para cargar un chat específico desde el historial
+const loadChatFromHistory = (index) => {
+    const chatHistory = JSON.parse(localStorage.getItem("chat-history")) || [];
+    if (chatHistory[index]) {
+        chatContainer.innerHTML = chatHistory[index];
+        chatContainer.scrollTo(0, chatContainer.scrollHeight);
+    }
+};
+
+
+
+
 const handleOutgoingChat = () => {
     userText = chatInput.value.trim(); // Get chatInput value and remove extra space | Obtenga el valor chatInput y elimine el espacio extra
     if(!userText) return; // If chatInput is empty return from here | Si chatInput está vacío, regrese desde aquí
@@ -120,24 +221,69 @@ const handleOutgoingChat = () => {
     chatInput.style.height = `${initialHeight}px`;
 
     const html = `<div class="chat-content">
-                <div class="chat-details">  
-                    <!--CAMBIAR IMG DE USUARIO-->
-                     <img src="./img/Logo2.png" alt="user-img">
+                    <div class="chat-details">  
+                        <!--CAMBIAR IMG DE USUARIO-->
+                        <img src="./img/Logo2.png" alt="user-img">
 
-                    <p></p>
-                </div>
-            </div>`;
+                        <p></p>
+                    </div>
+                </div>`;
 
 
     // Create an outgoing chat div with user's message and append it to chat container        
     //Cree un div de chat saliente con el mensaje del usuario y agréguelo al contenedor de chat
     const outgoingChatDiv = createElement(html, "outgoing");
     outgoingChatDiv.querySelector("p").textContent = userText;
-    document.querySelector(".defaul-text")?.remove();
+    //Eliminar el texto por defecto si existe
+    const defaultTextElement = document.querySelector(".default-text");
+    if (defaultTextElement){
+        defaultTextElement.remove();
+    }
+    
+    //document.querySelector(".defaul-text")?.remove();
     chatContainer.appendChild(outgoingChatDiv);
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
     setTimeout(showTypingAnimation, 500);
-}
+
+    saveChatToHistory(chatContainer.innerHTML);
+  
+};
+
+// Nueva función para crear un nuevo chat
+const createNewChat = () => {
+    const chatContent = chatContainer.innerHTML;
+    if (!chatContent.includes("default-text") && chatContent.trim()) {
+        saveChatToHistory(chatContent);
+    }
+
+    chatContainer.innerHTML = `<div class="default-text">
+                                <h1>EdnaIA</h1>
+                                <p>Inicie una conversación y explore el poder de la IA.<br> Su historial de chat se mostrará aquí.</p>
+                               </div>`;
+    loadChatHistory();
+};
+
+// Cargar el historial de conversaciones al cargar la página
+document.addEventListener("DOMContentLoaded", loadChatHistory);
+
+// Manejar el menú lateral
+document.addEventListener('DOMContentLoaded', function() {
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function() {
+            if (sideNav) {
+                sideNav.classList.toggle('show');
+            }
+        });
+    }
+
+    // Alternar la visibilidad de la barra lateral
+    document.querySelector('.toggle-sidebar').addEventListener('click', function() {
+        document.querySelector('.sidebar').classList.toggle('active');
+    });
+
+});
+
+newChatButton.addEventListener("click", createNewChat);
 
 themeButton.addEventListener("click", () => {
     // Toggle body's class for the theme mode and save the updated theme to the local storage
@@ -147,14 +293,26 @@ themeButton.addEventListener("click", () => {
     themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
 });
 
+// Modificar la función para eliminar el historial de conversaciones
 deleteButton.addEventListener("click", () => {
-    // Remove the chats from local storage and call loadDataFromLocalstorage function
-    // Elimine los chats del almacenamiento local y llame a la función loadDataFromLocalstorage
-    if(confirm("Are you sure you want to delete all the chats?")) {
+    if (confirm("Are you sure you want to delete all the chats?")) {
         localStorage.removeItem("all-chats");
+        localStorage.removeItem("chat-history");
         loadDataFromLocalstorage();
+        loadChatHistory();
     }
 });
+
+
+
+// deleteButton.addEventListener("click", () => {
+    // Remove the chats from local storage and call loadDataFromLocalstorage function
+    // Elimine los chats del almacenamiento local y llame a la función loadDataFromLocalstorage
+//     if(confirm("Are you sure you want to delete all the chats?")) {
+//         localStorage.removeItem("all-chats");
+//         loadDataFromLocalstorage();
+//     }
+// });
 
 
 chatInput.addEventListener("input", () => {
@@ -168,7 +326,7 @@ chatInput.addEventListener("keydown", (e) => {
     // Si se presiona la tecla Enter sin Shift y el ancho de la ventana es mayor / If the Enter key is pressed without Shift and the window width is larger
     // de 800 píxeles, maneja el chat saliente / than 800 pixels, handle the outgoing chat
     if(e.key === "Enter" && !e.shiftKey && window.innerWidth > 800) {
-        e.preventDefault();
+        e.preventDefault(); // Prevent form submission on Enter key press | Evite el envío del formulario al presionar la tecla Enter
         handleOutgoingChat();
     }
 });

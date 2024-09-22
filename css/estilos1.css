@@ -246,10 +246,10 @@ body {
 .price__element--best{
     width: 370px;
     padding: 60px 40px;
-    background-color: #D29BFD;/*CAMBIAR COLOR DE CUADRO 2*/
+    background-color: #72C2AE;/*CAMBIAR COLOR DE CUADRO 2*/
     --color-plan: rgb(255 255 255 / 75%); /*COLOR DE LETRA CUADRO ROJO GRID*/
     --color-price: #fff;
-    --bg-cta: #a87bc7; /*BOTON DE CUENTA CUADRO 2*/
+    --bg-cta: #3AB397; /*BOTON DE CUENTA CUADRO 2*/
     --color-cta: #FFF; /*Letra grande*/
     --color-items: #fff;
 }

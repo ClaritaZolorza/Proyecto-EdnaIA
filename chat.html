@@ -6,32 +6,59 @@
     <title>Chat | EdnaIa</title>
 
     <link rel="shortcut icon" href="./img/Logo2.png" type="image/x-icon">
-    <link rel="stylesheet" href="./css/style2.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <link rel="stylesheet" href="./css/estiloChat.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
-
     <script src="./js/scriptChat.js" defer></script>
 </head>
-<body> <!--class="light-mode"-->
-    <!--Chat container-->
-     <div class="chat-container"></div> 
+<body>
 
-    <!-- Typing container / Contenedor de escritura -->
-     <div class="typing-container">
-        <div class="typing-content">
-            <div class="typing-textarea">
-                <!-- Enter a prompt here / Ingrese un mensaje aquí-->
-                <textarea id="chat-input" placeholder="Envía un mensaje a EdnaIa" required></textarea>
-                <span id="send-btn" class="material-symbols-rounded">send</span>
-            </div>
-            <div class="typing-controls">
-                <span id="theme-btn" class="material-symbols-rounded">light_mode</span> <!--Modo luz-->
-                <span id="delete-btn" class="material-symbols-rounded">delete</span> <!--Eliminar-->
+    <!-- Contenedor principal para flexbox -->
+    <div class="main-container">
+        <!-- Barra de navegación lateral -->
+        <aside class="sidebar">
+            <button id="new-chat-btn" class="new-chat">Nuevo Chat <span class="material-symbols-rounded">add</span></button> <!-- Agregar el ícono "+" -->
+            <section class="history" id="chat-history">
+                <!-- Aquí se agregarán automáticamente los chats previos -->
+            </section>
+            <footer class="nav">
+                <p>Made by Clarita Zolorza</p>
+            </footer>
+        </aside>
+
+        <!-- Contenedor del chat principal -->
+        <div class="content-container">
+            <main class="chat-container">
+                <div class="chat">
+                    <!-- Aquí se agregarán los mensajes -->
+                    <!-- Ejemplo de mensaje -->
+                    <div class="message-container">
+                        <p class="message">Respuesta del chatbot</p>
+                        <button class="copy-btn material-symbols-rounded">content_copy</button> <!-- Botón de copiar al lado del mensaje -->
+                    </div>
+                </div>
+            </main>
+
+            <!-- Contenedor de escritura -->
+            <div class="typing-container">
+                <div class="typing-content">
+                    <div class="typing-textarea">
+                        <textarea id="chat-input" placeholder="Envía un mensaje a EdnaIa" required></textarea>
+                        <span id="send-btn" class="material-symbols-rounded">send</span>
+                    </div>
+                    <div class="typing-controls">
+                        <span id="theme-btn" class="material-symbols-rounded">light_mode</span>
+                        <span id="delete-btn" class="material-symbols-rounded">delete</span>
+                    </div>
+                </div>
+                <p class="info">EdnaIA puede cometer errores. Considera verificar la información.</p>
             </div>
         </div>
-     </div>
+    </div>
 
+    <!-- Botón para alternar la visibilidad de la barra lateral -->
+    <button class="toggle-sidebar" aria-label="Toggle Sidebar">
+        <span class="material-symbols-rounded">menu</span>
+    </button>
 
 </body>
 </html>
