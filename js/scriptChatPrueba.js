@@ -1,27 +1,33 @@
+// Selecciona el elemento con el id 'chat-input' es la caja de texto donde el usuario escribe los mensajes.
 const chatInput = document.querySelector('#chat-input');
+// Selecciona el botón con el id 'send-btn', se usa para enviar el mensaje una vez que se hace clic en él.
 const sendButton = document.querySelector('#send-btn');
-const newChatButton = document.querySelector('#new-chat-btn');
+// Selecciona el contenedor con la clase 'chat-container', donde se mostrarán los mensajes enviados por el usuario y las respuestas del chatbot.
 const chatContainer = document.querySelector(".chat-container");
+// Selecciona el botón con el id 'theme-btn', cambia el tema de la interfaz (de claro a oscuro).
 const themeButton = document.querySelector("#theme-btn");
+// Selecciona el botón con el id 'delete-btn' se usa para borrar los mensajes en el chat.
 const deleteButton = document.querySelector("#delete-btn");
-const chatHistoryContainer = document.querySelector("#chat-history");
-const menuToggle = document.querySelector('.menu-toggle');  
-const sideNav = document.querySelector('.side-nav');        
 
+// Inicializa una variable 'userText' que luego almacenará el texto ingresado por el usuario.
+// Actualmente está en 'null' porque no hay texto definido hasta que el usuario escriba algo.
 let userText = null;
-// Put your key this const API_KEY = "YOUR_KEY_HERE" | Pon tu clave esta const API_KEY = "YOUR_KEY_HERE"
-//const API_KEY = key();
 
-const API_URL = "http://127.0.0.1:5000/chat"; // URL de servidor Flask
+// Define la URL de la API donde se enviarán las solicitudes HTTP para interactuar con el servidor.
+const API_URL = "http://127.0.0.1:5000/chat"; // URL de servidor Flask (Explicación de conexion de servidor en el archivo chatEdnaIA.py)
+// Guarda la altura inicial del área de texto donde el usuario escribe los mensajes.
 const initialHeight = chatInput.scrollHeight;
 
+// Función que carga datos desde el 'localStorage' del navegador para inicializar la interfaz del chat.
 const loadDataFromLocalstorage = () => {
+    // Recupera la preferencia del tema almacenada en el 'localStorage' bajo la clave 'theme-color'.
     const themeColor = localStorage.getItem("theme-color");
 
     // Cambia el tema según lo guardado en el localStorage
     document.body.classList.toggle("light-mode", themeColor === "light_mode");
     themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
 
+    // Texto por defecto que se mostrará si no hay ningún chat almacenado en el 'localStorage'.
     const defaultText = `<div class="default-text">
                             <h1>EdnaIA</h1>
                             <p>Inicie una conversación y explore el poder de la IA.<br> Su historial de chat se mostrará aquí.</p>
@@ -30,15 +36,14 @@ const loadDataFromLocalstorage = () => {
     // Cargar chats desde el localStorage o mostrar el texto por defecto si está vacío
     chatContainer.innerHTML = localStorage.getItem("all-chats") || defaultText;
 
+    // Asegura que el contenedor del chat se desplace hacia abajo hasta la última conversación (en caso de que haya un historial de chat o se haya acumulado).
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
 }
-
-
+// Carga la configuración y los datos del chat almacenados previamente al iniciar la aplicación.
 loadDataFromLocalstorage();
 
 const createElement = (html, className) => {
-    //Create new div and apply chat, specified class and set html content of div
-    //Cree un nuevo div y aplique el chat, la clase especificada y establezca el contenido html del div
+    // Crea un nuevo elemento 'div' para contener el mensaje del chat.
     const chatDiv = document.createElement("div");
     chatDiv.classList.add("chat", className);
     chatDiv.innerHTML = html;
@@ -62,46 +67,31 @@ const typeText = (element, text) => {
 };
 
 
-
-
 //Obtener respuesta de chat
+/**
+ * Función asíncrona que envía el mensaje del usuario al servidor y recibe la respuesta del chatbot.
+ * @param {HTMLElement} incomingChatDiv - El div que representa el mensaje entrante, donde se mostrará la respuesta.
+ */
 const getChatResponse = async (incomingChatDiv) => {
+     // Crea un nuevo elemento <p> que contendrá la respuesta del chatbot.
     const pElement = document.createElement("p");
 
     const requestOptions = {
-        method: "POST",
+        method: "POST",  // El método de la solicitud es POST
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json" // El contenido es de tipo JSON.
         },
         body: JSON.stringify({
-            message: userText
+            message: userText // El mensaje que el usuario ingresó en el chat se envía en el cuerpo de la solicitud.
         })
     };
-
-    // try {
-    //     const response = await fetch(API_URL, requestOptions);
-    //     if (!response.ok) {
-    //         throw new Error('Network response was not ok');
-    //     }
-
-    //     const data = await response.json();
-    //     const responseText = data.response.trim();
-        
-    //     // Usa la función de escritura gradual
-       
-    //     typeText(pElement, responseText, () => {
-    //         localStorage.setItem("all-chats", chatContainer.innerHTML);
-    //     });
-        // Usa 'data.response' en lugar de 'responseText'
-        // typeText(pElement, data.response.trim(), () => {
-            // Código a ejecutar después de completar la escritura
-        //     localStorage.setItem("all-chats", chatContainer.innerHTML);
-
-        // });}
         try {
+             // Realiza una solicitud al servidor Flask utilizando la API fetch.
             const response = await fetch(API_URL, requestOptions);
             if (!response.ok) throw new Error('Network response was not ok');
+            // Convierte la respuesta del servidor a formato JSON.
             const data = await response.json();
+            // Llama a la función typeText para simular el efecto de escritura y mostrar la respuesta del chatbot.
             typeText(pElement, data.response.trim());
         } catch (error) {
         pElement.classList.add("error");
@@ -125,6 +115,7 @@ const copyResponse = (copyBtn) => {
     setTimeout(()=> copyBtn.textContent = "content_copy", 1000);
 }
 
+// Función que muestra la animación de escritura del chatbot.
 const showTypingAnimation = () => {
     const html = `<div class="chat-content">
                     <div class="chat-details">
@@ -148,78 +139,14 @@ const showTypingAnimation = () => {
     getChatResponse(incomingChatDiv);
 }
 
-
-// Función para enviar un mensaje
-// const sendMessage = () => {
-//     const message = chatInput.value.trim();
-//     if (message !== "") {
-//         // Eliminar texto por defecto si hay mensajes
-//         const defaultTextElement = document.querySelector('.default-text');
-//         if (defaultTextElement) {
-//             defaultTextElement.remove();
-//         }
-
-//         // Agregar mensaje al chat
-//         const newMessage = document.createElement('div');
-//         newMessage.classList.add('chat', 'outgoing');
-//         newMessage.innerHTML = `<div class="chat-content">
-//                                     <div class="chat-details">
-//                                         <img src="./img/Logo2.png" alt="user-img">
-//                                         <p>${message}</p>
-//                                     </div>
-//                                 </div>`;
-//         chatContainer.appendChild(newMessage);
-//         chatInput.value = ""; // Limpiar input
-
-//         // Guardar el chat en localStorage
-//         saveChatsToLocalstorage();
-//         chatContainer.scrollTo(0, chatContainer.scrollHeight);
-
-//         // Simular respuesta de IA
-//         setTimeout(showTypingAnimation, 500);
-//     }
-// }
-
-
-// Función para cargar el historial de conversaciones desde localStorage
-const loadChatHistory = () => {
-    const chatHistory = JSON.parse(localStorage.getItem("chat-history")) || [];
-    chatHistoryContainer.innerHTML = "";
-
-    chatHistory.forEach((chat, index) => {
-        const chatItem = document.createElement("p");
-        chatItem.textContent = `Chat ${index + 1}`;
-        chatItem.addEventListener("click", () => loadChatFromHistory(index));
-        chatHistoryContainer.appendChild(chatItem);
-    });
-};
-
-const saveChatToHistory = (chatContent) => {
-    const chatHistory = JSON.parse(localStorage.getItem("chat-history")) || [];
-    chatHistory.push(chatContent);
-    localStorage.setItem("chat-history", JSON.stringify(chatHistory));
-    loadChatHistory();
-};
-
-// Función para cargar un chat específico desde el historial
-const loadChatFromHistory = (index) => {
-    const chatHistory = JSON.parse(localStorage.getItem("chat-history")) || [];
-    if (chatHistory[index]) {
-        chatContainer.innerHTML = chatHistory[index];
-        chatContainer.scrollTo(0, chatContainer.scrollHeight);
-    }
-};
-
-
-
-
+// Función que maneja el envío de mensajes del usuario (chat saliente).
 const handleOutgoingChat = () => {
     userText = chatInput.value.trim(); // Get chatInput value and remove extra space | Obtenga el valor chatInput y elimine el espacio extra
     if(!userText) return; // If chatInput is empty return from here | Si chatInput está vacío, regrese desde aquí
     
     chatInput.value = "";
     chatInput.style.height = `${initialHeight}px`;
-
+    // Estructura HTML del mensaje del usuario. (foto-perfil y mensaje)
     const html = `<div class="chat-content">
                     <div class="chat-details">  
                         <!--CAMBIAR IMG DE USUARIO-->
@@ -249,42 +176,7 @@ const handleOutgoingChat = () => {
   
 };
 
-// Nueva función para crear un nuevo chat
-const createNewChat = () => {
-    const chatContent = chatContainer.innerHTML;
-    if (!chatContent.includes("default-text") && chatContent.trim()) {
-        saveChatToHistory(chatContent);
-    }
-
-    chatContainer.innerHTML = `<div class="default-text">
-                                <h1>EdnaIA</h1>
-                                <p>Inicie una conversación y explore el poder de la IA.<br> Su historial de chat se mostrará aquí.</p>
-                               </div>`;
-    loadChatHistory();
-};
-
-// Cargar el historial de conversaciones al cargar la página
-document.addEventListener("DOMContentLoaded", loadChatHistory);
-
-// Manejar el menú lateral
-document.addEventListener('DOMContentLoaded', function() {
-    if (menuToggle) {
-        menuToggle.addEventListener('click', function() {
-            if (sideNav) {
-                sideNav.classList.toggle('show');
-            }
-        });
-    }
-
-    // Alternar la visibilidad de la barra lateral
-    document.querySelector('.toggle-sidebar').addEventListener('click', function() {
-        document.querySelector('.sidebar').classList.toggle('active');
-    });
-
-});
-
-newChatButton.addEventListener("click", createNewChat);
-
+// Evento para cambiar el tema de la página.
 themeButton.addEventListener("click", () => {
     // Toggle body's class for the theme mode and save the updated theme to the local storage
     // Cambie la clase del cuerpo para el modo de tema y guarde el tema actualizado en el almacenamiento local
@@ -293,27 +185,6 @@ themeButton.addEventListener("click", () => {
     themeButton.innerText = document.body.classList.contains("light-mode") ? "dark_mode" : "light_mode";
 });
 
-// Modificar la función para eliminar el historial de conversaciones
-deleteButton.addEventListener("click", () => {
-    if (confirm("Are you sure you want to delete all the chats?")) {
-        localStorage.removeItem("all-chats");
-        localStorage.removeItem("chat-history");
-        loadDataFromLocalstorage();
-        loadChatHistory();
-    }
-});
-
-
-
-// deleteButton.addEventListener("click", () => {
-    // Remove the chats from local storage and call loadDataFromLocalstorage function
-    // Elimine los chats del almacenamiento local y llame a la función loadDataFromLocalstorage
-//     if(confirm("Are you sure you want to delete all the chats?")) {
-//         localStorage.removeItem("all-chats");
-//         loadDataFromLocalstorage();
-//     }
-// });
-
 
 chatInput.addEventListener("input", () => {
     // Adjust the height of the input field dynamically based on its content
@@ -321,7 +192,7 @@ chatInput.addEventListener("input", () => {
     chatInput.style.height = `${initialHeight}px`;
     chatInput.style.height = `${chatInput.scrollHeight}px`;
 });
-
+// // Detectar cuando se presiona una tecla en el campo de entrada
 chatInput.addEventListener("keydown", (e) => {
     // Si se presiona la tecla Enter sin Shift y el ancho de la ventana es mayor / If the Enter key is pressed without Shift and the window width is larger
     // de 800 píxeles, maneja el chat saliente / than 800 pixels, handle the outgoing chat
@@ -330,5 +201,5 @@ chatInput.addEventListener("keydown", (e) => {
         handleOutgoingChat();
     }
 });
-
+// Detectar cuando se hace clic en el botón de enviar y manejar el chat saliente
 sendButton.addEventListener("click", handleOutgoingChat);

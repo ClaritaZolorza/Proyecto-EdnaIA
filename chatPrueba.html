@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Prueba | EdnaIA</title>
+
+    <link rel="shortcut icon" href="./img/Logo2.png" type="image/x-icon">
+    <link rel="stylesheet" href="./css/styleChatPrueba.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <script src="./js/scriptChatPrueba.js" defer></script>
+</head>
+<body>
+
+    <!-- Contenedor principal para flexbox -->
+    <div class="main-container">
+
+        <!-- Contenedor del chat principal -->
+        <div class="content-container">
+            <main class="chat-container">
+                <div class="chat">
+                    <!-- Aquí se agregarán los mensajes -->
+                    <div class="message-container">
+                        <p class="message">Respuesta del chatbot</p>
+                        <button class="copy-btn material-symbols-rounded">content_copy</button> <!-- Botón de copiar al lado del mensaje -->
+                    </div>
+                </div>
+            </main>
+
+            <!-- Contenedor de escritura -->
+            <div class="typing-container">
+                <div class="typing-content">
+                    <div class="typing-textarea">
+                        <textarea id="chat-input" placeholder="Envía un mensaje a EdnaIa" required></textarea>
+                        <span id="send-btn" class="material-symbols-rounded">send</span>
+                    </div>
+                    <div class="typing-controls">
+                        <span id="theme-btn" class="material-symbols-rounded">light_mode</span>
+                        <span id="delete-btn" class="material-symbols-rounded">delete</span>
+                    </div>
+                </div>
+                <p class="info">EdnaIA puede cometer errores. Considera verificar la información.</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

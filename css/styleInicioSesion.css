@@ -28,6 +28,21 @@ body {
     box-shadow: 0 0 10px rgb(0, 0, 0, 0.3);
 }
 
+.back-arrow {
+    position: absolute;
+    bottom: 20px; /* Ajusta la posición vertical */
+    left: 20px; /* Ajusta la posición horizontal */
+    font-size: 24px; /* Tamaño del ícono */
+    color: #3AB397; /* Color de la flecha */
+    text-decoration: none; /* Sin subrayado */
+    transition: color 0.3s ease; /* Efecto de transición al pasar el mouse */
+}
+
+.back-arrow:hover {
+    color: #2a9b7a; /* Color al pasar el mouse */
+}
+
+
 .container-form {
     width: 100%;
     overflow: hidden;
