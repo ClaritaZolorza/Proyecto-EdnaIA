@@ -176,6 +176,22 @@ const handleOutgoingChat = () => {
   
 };
 
+// Función para eliminar todos los mensajes del historial y restaurar el estado inicial
+const deleteChatHistory = () => {
+    // Texto por defecto que se mostrará después de eliminar los mensajes
+    const defaultText = `<div class="default-text">
+                            <h1>EdnaIA</h1>
+                            <p>Inicie una conversación y explore el poder de la IA.<br> Su historial de chat se mostrará aquí.</p>
+                        </div>`;
+    // Establece el contenido del contenedor de chat con el texto por defecto
+    chatContainer.innerHTML = defaultText;
+    // Guarda el estado actual del historial vacío con el texto por defecto en el localStorage
+    localStorage.setItem("all-chats", chatContainer.innerHTML);
+};
+
+// Escucha el evento click en el botón de eliminar mensajes
+deleteButton.addEventListener("click", deleteChatHistory);
+
 // Evento para cambiar el tema de la página.
 themeButton.addEventListener("click", () => {
     // Toggle body's class for the theme mode and save the updated theme to the local storage
